@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TimerTask;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javafx.application.Platform;
@@ -888,7 +887,7 @@ public class JabRefFrame extends BorderPane {
                 new SeparatorMenuItem(),
 
                 factory.createMenuItem(StandardActions.DONATE, new OpenBrowserAction("https://donations.jabref.org")),
-                factory.createMenuItem(StandardActions.SEARCH_FOR_UPDATES, new SearchForUpdateAction(Globals.BUILD_INFO, prefs.getInternalPreferences(), dialogService, Globals.TASK_EXECUTOR)),
+                factory.createMenuItem(StandardActions.SEARCH_FOR_UPDATES, new SearchForUpdateAction(Globals.BUILD_INFO, prefs.getVersionPreferences(), dialogService, Globals.TASK_EXECUTOR)),
                 factory.createSubMenu(StandardActions.WEB_MENU,
                         factory.createMenuItem(StandardActions.OPEN_WEBPAGE, new OpenBrowserAction("https://jabref.org/")),
                         factory.createMenuItem(StandardActions.OPEN_BLOG, new OpenBrowserAction("https://blog.jabref.org/")),
@@ -1053,9 +1052,9 @@ public class JabRefFrame extends BorderPane {
         ActionFactory factory = new ActionFactory(keyBindingRepository);
 
         contextMenu.getItems().addAll(
-                factory.createMenuItem(StandardActions.LIBRARY_PROPERTIES, new LibraryPropertiesAction(tab::getBibDatabaseContext, stateManager)),
-                factory.createMenuItem(StandardActions.OPEN_DATABASE_FOLDER, new OpenDatabaseFolder(tab::getBibDatabaseContext)),
-                factory.createMenuItem(StandardActions.OPEN_CONSOLE, new OpenConsoleAction(tab::getBibDatabaseContext, stateManager, prefs)),
+                factory.createMenuItem(StandardActions.LIBRARY_PROPERTIES, new LibraryPropertiesAction(tab.getBibDatabaseContext(), stateManager)),
+                factory.createMenuItem(StandardActions.OPEN_DATABASE_FOLDER, new OpenDatabaseFolder(tab.getBibDatabaseContext())),
+                factory.createMenuItem(StandardActions.OPEN_CONSOLE, new OpenConsoleAction(tab.getBibDatabaseContext(), stateManager, prefs)),
                 new SeparatorMenuItem(),
                 factory.createMenuItem(StandardActions.CLOSE_LIBRARY, new CloseDatabaseAction(tab)),
                 factory.createMenuItem(StandardActions.CLOSE_OTHER_LIBRARIES, new CloseOthersDatabaseAction(tab)),
@@ -1341,15 +1340,15 @@ public class JabRefFrame extends BorderPane {
     }
 
     private class OpenDatabaseFolder extends SimpleCommand {
-        private final Supplier<BibDatabaseContext> databaseContext;
+        private final BibDatabaseContext databaseContext;
 
-        public OpenDatabaseFolder(Supplier<BibDatabaseContext> databaseContext) {
+        public OpenDatabaseFolder(BibDatabaseContext databaseContext) {
             this.databaseContext = databaseContext;
         }
 
         @Override
         public void execute() {
-            Optional.of(databaseContext.get()).flatMap(BibDatabaseContext::getDatabasePath).ifPresent(path -> {
+            Optional.of(databaseContext).flatMap(BibDatabaseContext::getDatabasePath).ifPresent(path -> {
                 try {
                     JabRefDesktop.openFolderAndSelectFile(path, prefs);
                 } catch (IOException e) {

@@ -32,7 +32,8 @@ class SuggestionProvidersTest {
                 true,
                 AutoCompleteFirstNameMode.BOTH,
                 AutoCompletePreferences.NameFormat.BOTH,
-                completeFields);
+                completeFields,
+                null);
         this.suggestionProviders = new SuggestionProviders(database, abbreviationRepository, autoCompletePreferences);
     }
 

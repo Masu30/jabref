@@ -13,6 +13,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 
 import org.jabref.gui.DialogService;
+import org.jabref.gui.externalfiletype.EditExternalFileTypesAction;
 import org.jabref.gui.preferences.PreferenceTabViewModel;
 import org.jabref.gui.push.PushToApplication;
 import org.jabref.gui.push.PushToApplicationSettings;
@@ -157,6 +158,10 @@ public class ExternalTabViewModel implements PreferenceTabViewModel {
                                  }
                              }
                      );
+    }
+
+    public void manageExternalFileTypes() {
+        new EditExternalFileTypesAction().execute();
     }
 
     public void customTerminalBrowse() {

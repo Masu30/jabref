@@ -2,20 +2,15 @@ package org.jabref.preferences;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 public class TelemetryPreferences {
-    private final BooleanProperty collectTelemetry;
-    private final BooleanProperty askToCollectTelemetry;
-    private final StringProperty userId;
+    private BooleanProperty collectTelemetry;
+    private BooleanProperty askToCollectTelemetry;
 
     public TelemetryPreferences(boolean shouldCollectTelemetry,
-                                boolean shouldAskToCollectTelemetry,
-                                String userId) {
+                                boolean shouldAskToCollectTelemetry) {
         this.collectTelemetry = new SimpleBooleanProperty(shouldCollectTelemetry);
         this.askToCollectTelemetry = new SimpleBooleanProperty(shouldAskToCollectTelemetry);
-        this.userId = new SimpleStringProperty(userId);
     }
 
     public boolean shouldCollectTelemetry() {
@@ -40,9 +35,5 @@ public class TelemetryPreferences {
 
     public void setAskToCollectTelemetry(boolean askToCollectTelemetry) {
         this.askToCollectTelemetry.set(askToCollectTelemetry);
-    }
-
-    public String getUserId() {
-        return userId.get();
     }
 }

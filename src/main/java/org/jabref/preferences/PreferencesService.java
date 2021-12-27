@@ -9,6 +9,7 @@ import java.util.prefs.BackingStoreException;
 
 import org.jabref.gui.autocompleter.AutoCompletePreferences;
 import org.jabref.gui.entryeditor.EntryEditorPreferences;
+import org.jabref.gui.groups.GroupViewMode;
 import org.jabref.gui.groups.GroupsPreferences;
 import org.jabref.gui.keyboard.KeyBindingRepository;
 import org.jabref.gui.maintable.ColumnPreferences;
@@ -52,7 +53,7 @@ import org.jabref.model.metadata.SaveOrderConfig;
 
 public interface PreferencesService {
 
-    InternalPreferences getInternalPreferences();
+    VersionPreferences getVersionPreferences();
 
     JournalAbbreviationPreferences getJournalAbbreviationPreferences();
 
@@ -146,6 +147,14 @@ public interface PreferencesService {
     Character getKeywordDelimiter();
 
     GroupsPreferences getGroupsPreferences();
+
+    void storeGroupsPreferences(GroupsPreferences preferences);
+
+    GroupViewMode getGroupViewMode();
+
+    void setGroupViewMode(GroupViewMode mode);
+
+    boolean getDisplayGroupCount();
 
     //*************************************************************************************************************
     // EntryEditorPreferences
@@ -289,9 +298,13 @@ public interface PreferencesService {
 
     XmpPreferences getXmpPreferences();
 
+    void storeXmpPreferences(XmpPreferences preferences);
+
     NameFormatterPreferences getNameFormatterPreferences();
 
     AutoCompletePreferences getAutoCompletePreferences();
+
+    void storeAutoCompletePreferences(AutoCompletePreferences autoCompletePreferences);
 
     SpecialFieldsPreferences getSpecialFieldsPreferences();
 

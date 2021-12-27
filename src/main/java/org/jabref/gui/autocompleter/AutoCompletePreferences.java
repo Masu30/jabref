@@ -2,13 +2,7 @@ package org.jabref.gui.autocompleter;
 
 import java.util.Set;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
-
+import org.jabref.logic.journals.JournalAbbreviationPreferences;
 import org.jabref.model.entry.field.Field;
 import org.jabref.model.entry.field.FieldFactory;
 
@@ -18,58 +12,33 @@ public class AutoCompletePreferences {
         LAST_FIRST, FIRST_LAST, BOTH
     }
 
-    private final BooleanProperty shouldAutoComplete;
-    private final ObjectProperty<AutoCompleteFirstNameMode> firstNameMode;
-    private final ObjectProperty<NameFormat> nameFormat;
-    private final ObservableSet<Field> completeFields;
+    private final boolean shouldAutoComplete;
+    private final AutoCompleteFirstNameMode firstNameMode;
+    private final NameFormat nameFormat;
+    private final Set<Field> completeFields;
+    private final JournalAbbreviationPreferences journalAbbreviationPreferences;
 
-    public AutoCompletePreferences(boolean shouldAutoComplete,
-                                   AutoCompleteFirstNameMode firstNameMode,
-                                   NameFormat nameFormat,
-                                   Set<Field> completeFields) {
-        this.shouldAutoComplete = new SimpleBooleanProperty(shouldAutoComplete);
-        this.firstNameMode = new SimpleObjectProperty<>(firstNameMode);
-        this.nameFormat = new SimpleObjectProperty<>(nameFormat);
-        this.completeFields = FXCollections.observableSet(completeFields);
+    public AutoCompletePreferences(boolean shouldAutoComplete, AutoCompleteFirstNameMode firstNameMode, NameFormat nameFormat, Set<Field> completeFields, JournalAbbreviationPreferences journalAbbreviationPreferences) {
+        this.shouldAutoComplete = shouldAutoComplete;
+        this.firstNameMode = firstNameMode;
+        this.nameFormat = nameFormat;
+        this.completeFields = completeFields;
+        this.journalAbbreviationPreferences = journalAbbreviationPreferences;
     }
 
     public boolean shouldAutoComplete() {
-        return shouldAutoComplete.get();
-    }
-
-    public BooleanProperty autoCompleteProperty() {
         return shouldAutoComplete;
-    }
-
-    public void setAutoComplete(boolean shouldAutoComplete) {
-        this.shouldAutoComplete.set(shouldAutoComplete);
     }
 
     /**
      * Returns how the first names are handled.
      */
     public AutoCompleteFirstNameMode getFirstNameMode() {
-        return firstNameMode.get();
-    }
-
-    public ObjectProperty<AutoCompleteFirstNameMode> firstNameModeProperty() {
         return firstNameMode;
     }
 
-    public void setFirstNameMode(AutoCompleteFirstNameMode firstNameMode) {
-        this.firstNameMode.set(firstNameMode);
-    }
-
     public NameFormat getNameFormat() {
-        return nameFormat.get();
-    }
-
-    public ObjectProperty<NameFormat> nameFormatProperty() {
         return nameFormat;
-    }
-
-    public void setNameFormat(NameFormat nameFormat) {
-        this.nameFormat.set(nameFormat);
     }
 
     /**
@@ -77,11 +46,15 @@ public class AutoCompletePreferences {
      *
      * @return List of field names
      */
-    public ObservableSet<Field> getCompleteFields() {
+    public Set<Field> getCompleteFields() {
         return completeFields;
     }
 
     public String getCompleteNamesAsString() {
         return FieldFactory.serializeFieldsList(completeFields);
+    }
+
+    public JournalAbbreviationPreferences getJournalAbbreviationPreferences() {
+        return journalAbbreviationPreferences;
     }
 }

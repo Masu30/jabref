@@ -11,7 +11,7 @@ import org.jabref.gui.util.BackgroundTask;
 import org.jabref.gui.util.TaskExecutor;
 import org.jabref.logic.l10n.Localization;
 import org.jabref.logic.util.Version;
-import org.jabref.preferences.InternalPreferences;
+import org.jabref.preferences.VersionPreferences;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +35,17 @@ public class VersionWorker {
 
     private final DialogService dialogService;
     private final TaskExecutor taskExecutor;
-    private final InternalPreferences internalPreferences;
+    private final VersionPreferences versionPreferences;
 
     public VersionWorker(Version installedVersion,
 
                          DialogService dialogService,
                          TaskExecutor taskExecutor,
-                         InternalPreferences internalPreferences) {
+                         VersionPreferences versionPreferences) {
         this.installedVersion = Objects.requireNonNull(installedVersion);
         this.dialogService = Objects.requireNonNull(dialogService);
         this.taskExecutor = Objects.requireNonNull(taskExecutor);
-        this.internalPreferences = internalPreferences;
+        this.versionPreferences = versionPreferences;
     }
 
     /**
@@ -89,14 +89,14 @@ public class VersionWorker {
      */
     private void showUpdateInfo(Optional<Version> newerVersion, boolean manualExecution) {
         // no new version could be found, only respect the ignored version on automated version checks
-        if (newerVersion.isEmpty() || (newerVersion.get().equals(internalPreferences.getIgnoredVersion()) && !manualExecution)) {
+        if (newerVersion.isEmpty() || (newerVersion.get().equals(versionPreferences.getIgnoredVersion()) && !manualExecution)) {
             if (manualExecution) {
                 dialogService.notify(Localization.lang("JabRef is up-to-date."));
             }
         } else {
             // notify the user about a newer version
             if (dialogService.showCustomDialogAndWait(new NewVersionDialog(installedVersion, newerVersion.get())).orElse(true)) {
-                internalPreferences.setIgnoredVersion(newerVersion.get());
+                versionPreferences.setIgnoredVersion(newerVersion.get());
             }
         }
     }

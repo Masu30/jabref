@@ -31,7 +31,7 @@ public class GroupsTab extends AbstractPreferenceTabView<GroupsTabViewModel> imp
     }
 
     public void initialize() {
-        this.viewModel = new GroupsTabViewModel(dialogService, preferencesService.getGroupsPreferences());
+        this.viewModel = new GroupsTabViewModel(dialogService, preferencesService);
 
         groupViewModeIntersection.selectedProperty().bindBidirectional(viewModel.groupViewModeIntersectionProperty());
         groupViewModeUnion.selectedProperty().bindBidirectional(viewModel.groupViewModeUnionProperty());

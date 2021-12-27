@@ -71,7 +71,9 @@ public class GroupNodeViewModel {
 
         displayName = new LatexToUnicodeFormatter().format(groupNode.getName());
         isRoot = groupNode.isRoot();
-        if (groupNode.getGroup() instanceof AutomaticGroup automaticGroup) {
+        if (groupNode.getGroup() instanceof AutomaticGroup) {
+            AutomaticGroup automaticGroup = (AutomaticGroup) groupNode.getGroup();
+
             children = automaticGroup.createSubgroups(this.databaseContext.getDatabase().getEntries())
                                      .stream()
                                      .map(this::toViewModel)
@@ -85,7 +87,7 @@ public class GroupNodeViewModel {
         }
         hasChildren = new SimpleBooleanProperty();
         hasChildren.bind(Bindings.isNotEmpty(children));
-        EasyBind.subscribe(preferencesService.getGroupsPreferences().displayGroupCountProperty(), shouldDisplay -> updateMatchedEntries());
+        updateMatchedEntries();
         expandedProperty.set(groupNode.getGroup().isExpanded());
         expandedProperty.addListener((observable, oldValue, newValue) -> groupNode.getGroup().setExpanded(newValue));
 
@@ -265,7 +267,7 @@ public class GroupNodeViewModel {
         // We calculate the new hit value
         // We could be more intelligent and try to figure out the new number of hits based on the entry change
         // for example, a previously matched entry gets removed -> hits = hits - 1
-        if (preferencesService.getGroupsPreferences().shouldDisplayGroupCount()) {
+        if (preferencesService.getDisplayGroupCount()) {
             BackgroundTask
                     .wrap(() -> groupNode.findMatches(databaseContext.getDatabase()))
                     .onSuccess(entries -> {

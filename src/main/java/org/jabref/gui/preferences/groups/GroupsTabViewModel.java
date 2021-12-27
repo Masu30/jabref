@@ -9,6 +9,7 @@ import org.jabref.gui.DialogService;
 import org.jabref.gui.groups.GroupViewMode;
 import org.jabref.gui.groups.GroupsPreferences;
 import org.jabref.gui.preferences.PreferenceTabViewModel;
+import org.jabref.preferences.PreferencesService;
 
 public class GroupsTabViewModel implements PreferenceTabViewModel {
 
@@ -19,16 +20,18 @@ public class GroupsTabViewModel implements PreferenceTabViewModel {
     private final StringProperty keywordSeparatorProperty = new SimpleStringProperty("");
 
     private final DialogService dialogService;
-    private final GroupsPreferences groupsPreferences;
+    private final PreferencesService preferences;
+    private final GroupsPreferences initialGroupsPreferences;
 
-    public GroupsTabViewModel(DialogService dialogService, GroupsPreferences groupsPreferences) {
+    public GroupsTabViewModel(DialogService dialogService, PreferencesService preferences) {
         this.dialogService = dialogService;
-        this.groupsPreferences = groupsPreferences;
+        this.preferences = preferences;
+        this.initialGroupsPreferences = preferences.getGroupsPreferences();
     }
 
     @Override
     public void setValues() {
-        switch (groupsPreferences.getGroupViewMode()) {
+        switch (initialGroupsPreferences.getGroupViewMode()) {
             case INTERSECTION -> {
                 groupViewModeIntersectionProperty.setValue(true);
                 groupViewModeUnionProperty.setValue(false);
@@ -38,17 +41,24 @@ public class GroupsTabViewModel implements PreferenceTabViewModel {
                 groupViewModeUnionProperty.setValue(true);
             }
         }
-        autoAssignGroupProperty.setValue(groupsPreferences.shouldAutoAssignGroup());
-        displayGroupCountProperty.setValue(groupsPreferences.shouldDisplayGroupCount());
-        keywordSeparatorProperty.setValue(groupsPreferences.getKeywordSeparator().toString());
+        autoAssignGroupProperty.setValue(initialGroupsPreferences.shouldAutoAssignGroup());
+        displayGroupCountProperty.setValue(initialGroupsPreferences.shouldDisplayGroupCount());
+        keywordSeparatorProperty.setValue(initialGroupsPreferences.getKeywordDelimiter().toString());
     }
 
     @Override
     public void storeSettings() {
-        groupsPreferences.setGroupViewMode(groupViewModeIntersectionProperty.getValue() ? GroupViewMode.INTERSECTION : GroupViewMode.UNION);
-        groupsPreferences.setAutoAssignGroup(autoAssignGroupProperty.getValue());
-        groupsPreferences.setDisplayGroupCount(displayGroupCountProperty.getValue());
-        groupsPreferences.keywordSeparatorProperty().setValue(keywordSeparatorProperty.getValue().charAt(0));
+        GroupViewMode groupViewMode = GroupViewMode.UNION;
+        if (groupViewModeIntersectionProperty.getValue()) {
+            groupViewMode = GroupViewMode.INTERSECTION;
+        }
+
+        GroupsPreferences newGroupsPreferences = new GroupsPreferences(
+                groupViewMode,
+                autoAssignGroupProperty.getValue(),
+                displayGroupCountProperty.getValue(),
+                keywordSeparatorProperty.getValue().charAt(0));
+        preferences.storeGroupsPreferences(newGroupsPreferences);
     }
 
     public BooleanProperty groupViewModeIntersectionProperty() {

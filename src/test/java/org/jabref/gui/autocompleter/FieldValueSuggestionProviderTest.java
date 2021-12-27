@@ -3,10 +3,7 @@ package org.jabref.gui.autocompleter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
-
-import javafx.collections.FXCollections;
 
 import org.jabref.logic.journals.JournalAbbreviationRepository;
 import org.jabref.model.database.BibDatabase;
@@ -28,7 +25,7 @@ class FieldValueSuggestionProviderTest {
     private BibDatabase database;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         database = new BibDatabase();
         autoCompleter = new FieldValueSuggestionProvider(StandardField.TITLE, database);
     }
@@ -67,7 +64,7 @@ class FieldValueSuggestionProviderTest {
     void completeOnIgnoredFieldReturnsNothing() {
         AutoCompletePreferences autoCompletePreferences = mock(AutoCompletePreferences.class);
         JournalAbbreviationRepository journalAbbreviationRepository = mock(JournalAbbreviationRepository.class);
-        when(autoCompletePreferences.getCompleteFields()).thenReturn(FXCollections.observableSet(Set.of(StandardField.AUTHOR)));
+        when(autoCompletePreferences.getCompleteFields()).thenReturn(Set.of(StandardField.AUTHOR));
         SuggestionProviders suggestionProviders = new SuggestionProviders(database, journalAbbreviationRepository, autoCompletePreferences);
 
         SuggestionProvider<String> autoCompleter = (SuggestionProvider<String>) suggestionProviders.getForField(StandardField.TITLE);
@@ -87,7 +84,7 @@ class FieldValueSuggestionProviderTest {
         database.insertEntry(entry);
 
         Collection<String> result = autoCompleter.provideSuggestions(getRequest(("testValue")));
-        assertEquals(List.of("testValue"), result);
+        assertEquals(Arrays.asList("testValue"), result);
     }
 
     @Test
@@ -97,7 +94,7 @@ class FieldValueSuggestionProviderTest {
         database.insertEntry(entry);
 
         Collection<String> result = autoCompleter.provideSuggestions(getRequest(("test")));
-        assertEquals(List.of("testValue"), result);
+        assertEquals(Arrays.asList("testValue"), result);
     }
 
     @Test
@@ -107,7 +104,7 @@ class FieldValueSuggestionProviderTest {
         database.insertEntry(entry);
 
         Collection<String> result = autoCompleter.provideSuggestions(getRequest(("testvalue")));
-        assertEquals(List.of("testValue"), result);
+        assertEquals(Arrays.asList("testValue"), result);
     }
 
     @Test

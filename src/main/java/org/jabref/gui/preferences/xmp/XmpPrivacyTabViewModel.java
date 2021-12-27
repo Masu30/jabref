@@ -1,6 +1,7 @@
 package org.jabref.gui.preferences.xmp;
 
 import java.util.Comparator;
+import java.util.HashSet;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
@@ -16,6 +17,7 @@ import org.jabref.logic.l10n.Localization;
 import org.jabref.logic.xmp.XmpPreferences;
 import org.jabref.model.entry.field.Field;
 import org.jabref.model.entry.field.FieldFactory;
+import org.jabref.preferences.PreferencesService;
 
 import de.saxsys.mvvmfx.utils.validation.FunctionBasedValidator;
 import de.saxsys.mvvmfx.utils.validation.ValidationMessage;
@@ -30,13 +32,15 @@ public class XmpPrivacyTabViewModel implements PreferenceTabViewModel {
     private final ObjectProperty<Field> addFieldProperty = new SimpleObjectProperty<>();
 
     private final DialogService dialogService;
-    private final XmpPreferences xmpPreferences;
+    private final PreferencesService preferences;
+    private final XmpPreferences initialXmpPreferences;
 
     private final Validator xmpFilterListValidator;
 
-    XmpPrivacyTabViewModel(DialogService dialogService, XmpPreferences xmpPreferences) {
+    XmpPrivacyTabViewModel(DialogService dialogService, PreferencesService preferences) {
         this.dialogService = dialogService;
-        this.xmpPreferences = xmpPreferences;
+        this.preferences = preferences;
+        this.initialXmpPreferences = preferences.getXmpPreferences();
 
         xmpFilterListValidator = new FunctionBasedValidator<>(
                 xmpFilterListProperty,
@@ -49,10 +53,10 @@ public class XmpPrivacyTabViewModel implements PreferenceTabViewModel {
 
     @Override
     public void setValues() {
-        xmpFilterEnabledProperty.setValue(xmpPreferences.shouldUseXmpPrivacyFilter());
+        xmpFilterEnabledProperty.setValue(initialXmpPreferences.shouldUseXmpPrivacyFilter());
 
         xmpFilterListProperty.clear();
-        xmpFilterListProperty.addAll(xmpPreferences.getXmpPrivacyFilter());
+        xmpFilterListProperty.addAll(initialXmpPreferences.getXmpPrivacyFilter());
 
         availableFieldsProperty.clear();
         availableFieldsProperty.addAll(FieldFactory.getCommonFields());
@@ -61,9 +65,11 @@ public class XmpPrivacyTabViewModel implements PreferenceTabViewModel {
 
     @Override
     public void storeSettings() {
-        xmpPreferences.setUseXmpPrivacyFilter(xmpFilterEnabledProperty.getValue());
-        xmpPreferences.getXmpPrivacyFilter().clear();
-        xmpPreferences.getXmpPrivacyFilter().addAll(xmpFilterListProperty.getValue());
+        XmpPreferences newXmpPreferences = new XmpPreferences(
+                xmpFilterEnabledProperty.getValue(),
+                new HashSet<>(xmpFilterListProperty.getValue()),
+                preferences.getKeywordDelimiter());
+        preferences.storeXmpPreferences(newXmpPreferences);
     }
 
     public void addField() {

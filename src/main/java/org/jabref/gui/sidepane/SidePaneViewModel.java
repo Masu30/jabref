@@ -24,6 +24,8 @@ import org.jabref.preferences.SidePanePreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.jabref.gui.sidepane.SidePaneType.GROUPS;
+
 public class SidePaneViewModel extends AbstractViewModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(SidePaneViewModel.class);
 
@@ -71,7 +73,7 @@ public class SidePaneViewModel extends AbstractViewModel {
                         new MoveUpAction(pane),
                         new MoveDownAction(pane),
                         sidePaneContentFactory,
-                        preferencesService.getGroupsPreferences(),
+                        preferencesService,
                         dialogService);
                 case WEB_SEARCH, OPEN_OFFICE -> new SidePaneComponent(pane,
                         new ClosePaneAction(pane),
@@ -131,6 +133,12 @@ public class SidePaneViewModel extends AbstractViewModel {
             getPanes().sort(new PreferredIndexSort(preferencesService.getSidePanePreferences()));
         } else {
             LOGGER.warn("SidePaneComponent {} not visible", pane.getTitle());
+        }
+
+        if (pane == GROUPS
+                && stateManager.getVisibleSidePaneComponents().contains(GROUPS)
+                && getSidePaneComponent(pane) instanceof GroupsSidePaneComponent component) {
+            component.afterOpening();
         }
     }
 

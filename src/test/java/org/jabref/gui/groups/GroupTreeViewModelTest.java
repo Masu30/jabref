@@ -2,8 +2,6 @@ package org.jabref.gui.groups;
 
 import java.util.Optional;
 
-import javafx.beans.property.SimpleObjectProperty;
-
 import org.jabref.gui.DialogService;
 import org.jabref.gui.StateManager;
 import org.jabref.gui.util.CurrentThreadTaskExecutor;
@@ -23,35 +21,26 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class GroupTreeViewModelTest {
-    private StateManager stateManager;
-    private GroupTreeViewModel groupTree;
-    private BibDatabaseContext databaseContext;
+    StateManager stateManager;
+    GroupTreeViewModel groupTree;
+    BibDatabaseContext databaseContext;
     private TaskExecutor taskExecutor;
-    private PreferencesService preferencesService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         databaseContext = new BibDatabaseContext();
         stateManager = new StateManager();
         stateManager.activeDatabaseProperty().setValue(Optional.of(databaseContext));
         taskExecutor = new CurrentThreadTaskExecutor();
-        preferencesService = mock(PreferencesService.class);
-        when(preferencesService.getGroupsPreferences()).thenReturn(new GroupsPreferences(
-                GroupViewMode.UNION,
-                true,
-                true,
-                new SimpleObjectProperty<>(',')
-        ));
-        groupTree = new GroupTreeViewModel(stateManager, mock(DialogService.class), preferencesService, taskExecutor, new CustomLocalDragboard());
+        groupTree = new GroupTreeViewModel(stateManager, mock(DialogService.class), mock(PreferencesService.class), taskExecutor, new CustomLocalDragboard());
     }
 
     @Test
-    void rootGroupIsAllEntriesByDefault() {
+    void rootGroupIsAllEntriesByDefault() throws Exception {
         AllEntriesGroup allEntriesGroup = new AllEntriesGroup("All entries");
-        assertEquals(new GroupNodeViewModel(databaseContext, stateManager, taskExecutor, allEntriesGroup, new CustomLocalDragboard(), preferencesService), groupTree.rootGroupProperty().getValue());
+        assertEquals(new GroupNodeViewModel(databaseContext, stateManager, taskExecutor, allEntriesGroup, new CustomLocalDragboard(), mock(PreferencesService.class)), groupTree.rootGroupProperty().getValue());
     }
 
     @Test
@@ -65,7 +54,7 @@ class GroupTreeViewModelTest {
         BibEntry entry = new BibEntry();
         databaseContext.getDatabase().insertEntry(entry);
 
-        GroupNodeViewModel model = new GroupNodeViewModel(databaseContext, stateManager, taskExecutor, group, new CustomLocalDragboard(), preferencesService);
+        GroupNodeViewModel model = new GroupNodeViewModel(databaseContext, stateManager, taskExecutor, group, new CustomLocalDragboard(), mock(PreferencesService.class));
         model.addEntriesToGroup(databaseContext.getEntries());
         groupTree.removeGroupsAndSubGroupsFromEntries(model);
 
@@ -79,7 +68,7 @@ class GroupTreeViewModelTest {
         BibEntry entry = new BibEntry();
         databaseContext.getDatabase().insertEntry(entry);
 
-        GroupNodeViewModel model = new GroupNodeViewModel(databaseContext, stateManager, taskExecutor, group, new CustomLocalDragboard(), preferencesService);
+        GroupNodeViewModel model = new GroupNodeViewModel(databaseContext, stateManager, taskExecutor, group, new CustomLocalDragboard(), mock(PreferencesService.class));
         model.addEntriesToGroup(databaseContext.getEntries());
         groupTree.removeGroupsAndSubGroupsFromEntries(model);
 

@@ -1,7 +1,5 @@
 package org.jabref.gui.autocompleter;
 
-import java.util.Collections;
-
 import org.jabref.model.entry.Author;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -58,15 +56,8 @@ public class PersonNameStringConverterTest {
             "TRUE, ONLY_ABBREVIATED, BOTH, 'Reagle, Jr., J. M.'",
             "TRUE, BOTH, BOTH, 'Reagle, Jr., J. M.'"
     })
-    void testToStringWithAutoCompletePreferences(boolean shouldAutoComplete,
-                                                 AutoCompleteFirstNameMode firstNameMode,
-                                                 AutoCompletePreferences.NameFormat nameFormat,
-                                                 String expectedResult) {
-        AutoCompletePreferences preferences = new AutoCompletePreferences(
-                shouldAutoComplete,
-                firstNameMode,
-                nameFormat,
-                Collections.emptySet());
+    void testToStringWithAutoCompletePreferences(boolean shouldAutoComplete, AutoCompleteFirstNameMode firstNameMode, AutoCompletePreferences.NameFormat nameFormat, String expectedResult) {
+        AutoCompletePreferences preferences = new AutoCompletePreferences(shouldAutoComplete, firstNameMode, nameFormat, null, null);
         PersonNameStringConverter converter = new PersonNameStringConverter(preferences);
         String formattedStr = converter.toString(author);
         assertEquals(expectedResult, formattedStr);
